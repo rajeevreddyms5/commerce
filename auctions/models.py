@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass # Do nothing for now
+    pass
 
 
 
@@ -13,7 +13,7 @@ class Listings(models.Model):
     category = models.CharField(max_length=64)
     startingbid = models.IntegerField
     link = models.URLField(blank=True)
-    watchlist = models.ForeignKey(User, blank=True)    
+    watchlist = models.BooleanField(default=False)    
     
 
 
@@ -23,6 +23,3 @@ class Bids(models.Model):
 
 class Comments(models.Model):
     comments = models.TextField
-
-
-class Activelistings(models.Model):
