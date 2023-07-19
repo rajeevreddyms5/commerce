@@ -73,4 +73,13 @@ def watchlist(request):
 
 
 def create(request):
+    if request.method == "POST":
+        title = request.POST["title"]
+        description = request.POST["description"]
+        bidprice = request.POST["bidprice"]
+        
     return render(request, "auctions/create.html")
+
+
+def listing_page(request):
+    return render(request, "autions/listings.html")
