@@ -8,7 +8,7 @@ from .models import User, Listings, Bids, Comments
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "Listing": Listings.objects.filter(status=False) #get only active listings where status is equal to True
+        "Listing": Listings.objects.filter(status=True) #get only active listings where status is equal to True
     })
 
 

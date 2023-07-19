@@ -20,7 +20,11 @@
                     <div class="card">
                         <div class="card-horizontal">
                             <div class="img-square-wrapper">
-                                <img class="" src={{ list.link }} alt={{ list.title }} width="150px">
+                                {% if list.link %}
+                                    <img class="" src={{ list.link }} alt={{ list.title }} width="150px">
+                                {% else %}
+                                    <p>no image </p>
+                                {% endif %}
                             </div>
                             <div class="card-body">
                                 <h4 class="card-title">{{ list.title }}</h4>
