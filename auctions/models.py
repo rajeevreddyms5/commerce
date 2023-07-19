@@ -15,7 +15,7 @@ class Listings(models.Model):
     link = models.URLField(blank=True)
     time = models.DateTimeField(auto_now_add=True)
     listedby = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name="listed_by")
-    status = models.BooleanField(default=False)
+    status = models.BooleanField(default=True)
     wathlist = models.ManyToManyField(User, blank=True)
     winner = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name="won") 
     

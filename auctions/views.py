@@ -4,14 +4,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-
 from .models import User, Listings, Bids, Comments
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "Listing": Listings.objects.all()
+        "Listing": Listings.objects.filter(status=False) #get only active listings where status is equal to True
     })
 
 
