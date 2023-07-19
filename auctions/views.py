@@ -4,11 +4,15 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
+from .models import User, Listings, Bids, Comments
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "Listing": Listings.objects.all()
+    })
 
 
 def login_view(request):
@@ -63,8 +67,6 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-
-
 def categories(request):
     return render(request, "auctions/index.html")
 
@@ -73,5 +75,5 @@ def watchlist(request):
     return render(request, "auctions/index.html")
 
 
-def create_listing(request):
-    return render(request, "auctions/index.html")
+def create(request):
+    return render(request, "auctions/create.html")
