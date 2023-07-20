@@ -1,14 +1,17 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.forms.models import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
+from django.views.generic.edit import CreateView
+from django.contrib.auth.decorators import login_required
 from .models import User, Listings, Bids, Comments
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "Listing": Listings.objects.filter(status=True) #get only active listings where status is equal to True
+        "Listing": Listings.objects.order_by("-time").filter(status=True) #get only active listings by sorting according to creted date where status is equal to True
     })
 
 
@@ -71,15 +74,35 @@ def categories(request):
 def watchlist(request):
     return render(request, "auctions/index.html")
 
-
+#create listings
 def create(request):
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
         bidprice = request.POST["bidprice"]
-        
-    return render(request, "auctions/create.html")
+        link = request.POST["link"]
+        category = request.POST["category"]
+        if title == "" or description == "" or bidprice == "":  #if manadatory fields not entered then return message
+            return render(request, "auctions/create.html", {
+                "message": "Enter Mandatory fields"
+            })
+        else:   #if manadatory fields entered then save
+            listing = Listings.objects.create(title=title, description=description, bidprice=bidprice, link=link, category=category)
+            listing.save()   
+            return index(request)
+    else:
+        return render(request, "auctions/create.html")
 
 
 def listing_page(request):
     return render(request, "autions/listings.html")
+
+
+@login_required
+class AuthorCreate(CreateView):
+    model = Listings
+    fields = ['listedby']
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)

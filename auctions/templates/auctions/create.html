@@ -1,11 +1,13 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
+
 
 {% block body %}
 
     <h2>Create Listing</h2>
 
     {% if message %}
-        <div>{{ message }}</div>
+        <div style="color: red;">{{ message }}</div>
     {% endif %}
 
     <form action="{% url 'create' %}" method="post">
@@ -33,6 +35,6 @@
         <input class="btn btn-primary" type="submit" value="Create Listing">
     </form>
     <br><br>
-    <star style="color: red;">* Mandatory</star>
+    <star style="color: red;">* Mandatory fields</star>
 
 {% endblock %}
