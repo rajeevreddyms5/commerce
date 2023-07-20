@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Listings, Bids, Comments
 
 def index(request):
+    print(request.user.id)
+    print(request.user.username)
     return render(request, "auctions/index.html", {
         "Listing": Listings.objects.order_by("-time").filter(status=True) #get only active listings by sorting according to creted date where status is equal to True
     })
@@ -82,13 +84,14 @@ def create(request):
         bidprice = request.POST["bidprice"]
         link = request.POST["link"]
         category = request.POST["category"]
+        user = User.objects.get(id=request.user.id)
         if title == "" or description == "" or bidprice == "":  #if manadatory fields not entered then return message
             return render(request, "auctions/create.html", {
                 "message": "Enter Mandatory fields"
             })
         else:   #if manadatory fields entered then save
-            listing = Listings.objects.create(title=title, description=description, bidprice=bidprice, link=link, category=category)
-            listing.save()   
+            listing = Listings.objects.create(title=title, description=description, bidprice=bidprice, link=link, category=category, listedby=user)
+            listing.save()  
             return index(request)
     else:
         return render(request, "auctions/create.html")
@@ -96,13 +99,3 @@ def create(request):
 
 def listing_page(request):
     return render(request, "autions/listings.html")
-
-
-@login_required
-class AuthorCreate(CreateView):
-    model = Listings
-    fields = ['listedby']
-    
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        return super().form_valid(form)
