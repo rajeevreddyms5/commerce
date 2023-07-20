@@ -3,7 +3,7 @@
 
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>Listing: {{ name }}</h2>
 
     <style>
         .card-horizontal {
@@ -12,34 +12,6 @@
         }
     </style>
 
-    {% for list in Listing %}
-
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 mt-3">
-                    <div class="card">
-                        <div class="card-horizontal">
-                            <div class="img-square-wrapper">
-                                {% if list.link %}
-                                    <img class="" src={{ list.link }} alt={{ list.title }} width="150px">
-                                {% else %}
-                                    <p>no image </p>
-                                {% endif %}
-                            </div>
-                            <div class="card-body">
-                                <h4 class="card-title">{{ list.title }}</h4>
-                                <p class="card-text">Price: ${{ list.bidprice }}</p>
-                                <p class="card-text">Description: {{ list.description }}</p>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <small class="text-muted">created {{ list.time }}</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    {% endfor %}
+    
 
 {% endblock %}

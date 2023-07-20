@@ -10,8 +10,6 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Listings, Bids, Comments
 
 def index(request):
-    print(request.user.id)
-    print(request.user.username)
     return render(request, "auctions/index.html", {
         "Listing": Listings.objects.order_by("-time").filter(status=True) #get only active listings by sorting according to creted date where status is equal to True
     })
@@ -97,5 +95,8 @@ def create(request):
         return render(request, "auctions/create.html")
 
 
-def listing_page(request):
-    return render(request, "autions/listings.html")
+def listing_page(request, name):
+    list = Listings.objects.get(id=name)
+    return render(request, "autions/listings.html", {
+        "name": list.title
+    })
