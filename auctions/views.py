@@ -161,8 +161,10 @@ def bid(request):
     list = Listings.objects.get(id=id)
     user = [User.objects.get(id=request.user.id)]
     if float(bid) > float(list.startingprice):
-        #list.bidprice = float(bid)
-        #list.save()
+        Bids.bidby = user
+        Bids.bidlisting = list
+        Bids.bidplace = float(bid)
+        Bids.save(self)
         return listing_page(request, id)
     else:
         print("Your bid must be higher than current price")
