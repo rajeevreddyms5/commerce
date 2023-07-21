@@ -10,6 +10,8 @@ from django.template import loader
 from django.contrib.auth.decorators import login_required
 from .models import User, Listings, Bids, Comments
 
+
+
 def index(request):
     if request.user.id is not None:
         watch = User.objects.get(id=request.user.id)
@@ -54,6 +56,13 @@ def register(request):
         username = request.POST["username"]
         email = request.POST["email"]
 
+        # Ensure password is not empty
+        password = request.POST["password"]
+        if password == "":
+            return render(request, "auctions/register.html", {
+                "message": "Password must not be empty."
+            })
+
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
@@ -79,9 +88,13 @@ def register(request):
 def categories(request):
     return render(request, "auctions/index.html")
 
-
+# watchlist page view function
 def watchlist(request):
-    return render(request, "auctions/index.html")
+    user = User.objects.get(id=request.user.id)
+    return render(request, "auctions/watchlist.html", {
+        "Listing": Listings.objects.order_by("-time").filter(watchlist=user, status=True),
+        "number" : user.watch.count()
+    })
 
 #create listings
 def create(request):
@@ -107,6 +120,7 @@ def create(request):
             "number": user.watch.count()
         })
 
+# listing details page view function
 @login_required(login_url='login')
 def listing_page(request, id):
     page = Listings.objects.get(id=id)
@@ -119,5 +133,33 @@ def listing_page(request, id):
         "created": page.listedby,
         "category": page.category.title,
         "watchlist": page.watchlist.filter(id=request.user.id).exists(),
-        "number": watch.watch.count()
+        "number": watch.watch.count(),
+        "id": page.id
     })
+
+# adds listing to users watchlist
+def add_watch(request, id):
+    list = Listings.objects.get(id=id)
+    user = [User.objects.get(id=request.user.id)]
+    list.watchlist.set(user)
+    return listing_page(request, id)
+
+# removes listing to users watchlist
+def remove_watch(request, id):
+    list = Listings.objects.get(id=id)
+    user = User.objects.get(id=request.user.id)
+    list.watchlist.remove(user)
+    return listing_page(request, id)
+
+# placing bid
+def bid(request):
+    bid = request.POST['bidprice']
+    id = request.POST['ID']
+    list = Listings.objects.get(id=id)
+    user = [User.objects.get(id=request.user.id)]
+    if float(bid) > float(list.startingprice):
+        list.bidprice = float(bid)
+        list.save()
+        return listing_page(request, id)
+    else:
+        print("Your bid must be higher than current price")

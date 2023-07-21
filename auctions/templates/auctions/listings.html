@@ -3,7 +3,9 @@
 {% block body %}
     <h2>Listing: {{ name }}</h2>
     {% if watchlist %}
-        <span class="badge text-badge-danger" style="background-color: grey; color: white;" > Watchlist </span>
+        <a href="{% url 'remove_watch' id %}" class="btn btn-secondary btn-sm">Remove from Watchlist</a>
+    {% else %}
+        <a href="{% url 'add_watch' id %}" class="btn btn-secondary btn-sm">Add to Watchlist</a>
     {% endif %}
     
     <div>
@@ -18,10 +20,11 @@
         <p> Price: ${{ price }} </p>
         <small class="text-muted">2 bid(s) so far your bid is the current bid.</small>
     </div>
-    <form action="{% url 'create' %}" method="post">
+    <form action="{% url 'bid' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <input class="form-control" autofocus type="text" name="title" placeholder="Bid">
+            <input class="form-control" autofocus type="text" name="bidprice" placeholder="Bid">
+            <input type="hidden" name="ID" value={{ id }} />
         </div>
         <input class="btn btn-primary" type="submit" value="Place Bid">
     </form>
