@@ -101,17 +101,17 @@ def create(request):
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
-        bidprice = request.POST["bidprice"]
+        startingprice = request.POST["startingprice"]
         link = request.POST["link"]
         category = request.POST["category"]
         user = User.objects.get(id=request.user.id)
-        if title == "" or description == "" or bidprice == "":  #if manadatory fields not entered then return message
+        if title == "" or description == "" or startingprice == "":  #if manadatory fields not entered then return message
             return render(request, "auctions/create.html", {
                 "message": "Enter Mandatory fields",
                 "number": user.watch.count()
             })
         else:   #if manadatory fields entered then save
-            listing = Listings.objects.create(title=title, description=description, bidprice=bidprice, link=link, category=category, listedby=user)
+            listing = Listings.objects.create(title=title, description=description, startingprice=startingprice, link=link, category=category, listedby=user)
             listing.save()  
             return index(request)
     else:
@@ -129,7 +129,7 @@ def listing_page(request, id):
         "name": page.title,
         "url": page.link,
         "description": page.description,
-        "price": page.bidprice,
+        "price": page.startingprice,
         "created": page.listedby,
         "category": page.category.title,
         "watchlist": page.watchlist.filter(id=request.user.id).exists(),
@@ -158,8 +158,8 @@ def bid(request):
     list = Listings.objects.get(id=id)
     user = [User.objects.get(id=request.user.id)]
     if float(bid) > float(list.startingprice):
-        list.bidprice = float(bid)
-        list.save()
+        #list.bidprice = float(bid)
+        #list.save()
         return listing_page(request, id)
     else:
         print("Your bid must be higher than current price")
