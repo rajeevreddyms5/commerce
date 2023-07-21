@@ -12,9 +12,25 @@
             <p> no image </p>
         {% endif %}
     </div>
-    <div style="padding: 10px;" >
+    <div style="padding-left:5px;" >
         <p> {{ description }} </p>
         <p> Price: ${{ price }} </p>
+        <small class="text-muted">2 bid(s) so far your bid is the current bid.</small>
+    </div>
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control" autofocus type="text" name="title" placeholder="Bid">
+        </div>
+        <input class="btn btn-primary" type="submit" value="Place Bid">
+    </form>
+    <br>
+    <div>
+        <h3>Details</h3>
+        <ul>
+            <li> Listed by: </li>
+            <li> Category: </li>
+        </ul>
     </div>
 
 {% endblock %}
