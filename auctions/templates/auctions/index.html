@@ -14,7 +14,7 @@
 
     {% for list in Listing %}
 
-        <div class="container-fluid" <a href={% url 'listing_page' name=list %}> {{ list.id }}</a></a>>
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-12 mt-3">
                     <div class="card">
@@ -23,11 +23,11 @@
                                 {% if list.link %}
                                     <img class="" src={{ list.link }} alt={{ list.title }} width="150px">
                                 {% else %}
-                                    <p>no image </p>
+                                    <p> no image </p>
                                 {% endif %}
                             </div>
                             <div class="card-body">
-                                <h4 class="card-title">{{ list.title }}</h4>
+                                <h4 class="card-title"> <a href="{% url 'listing_page' list.id %}" class="stretched-link">{{ list.title }}</a> </h4>
                                 <p class="card-text">Price: ${{ list.bidprice }}</p>
                                 <p class="card-text">Description: {{ list.description }}</p>
                             </div>

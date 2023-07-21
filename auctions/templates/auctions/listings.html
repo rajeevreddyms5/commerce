@@ -5,13 +5,16 @@
 {% block body %}
     <h2>Listing: {{ name }}</h2>
 
-    <style>
-        .card-horizontal {
-            display: flex;
-            flex: 1 1 auto;
-        }
-    </style>
-
-    
+    <div>
+        {% if url %}
+        <img style="height:400px;" src={{ url }} alt={{ name }} >
+        {% else %}
+            <p> no image </p>
+        {% endif %}
+    </div>
+    <div style="padding: 10px;" >
+        <p> {{ description }} </p>
+        <p> Price: ${{ price }} </p>
+    </div>
 
 {% endblock %}

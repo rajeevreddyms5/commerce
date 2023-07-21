@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from django.views.generic.edit import CreateView
+from django.template import loader
 from django.contrib.auth.decorators import login_required
 from .models import User, Listings, Bids, Comments
 
@@ -95,8 +96,11 @@ def create(request):
         return render(request, "auctions/create.html")
 
 
-def listing_page(request, name):
-    list = Listings.objects.get(id=name)
-    return render(request, "autions/listings.html", {
-        "name": list.title
+def listing_page(request, id):
+    page = Listings.objects.get(id=id)
+    return render(request, "auctions/listings.html", {
+        "name": page.title,
+        "url": page.link,
+        "description": page.description,
+        "price": page.bidprice,
     })
