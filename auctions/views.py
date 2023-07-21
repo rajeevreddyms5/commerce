@@ -17,11 +17,13 @@ def index(request):
         watch = User.objects.get(id=request.user.id)
         return render(request, "auctions/index.html", {
             "Listing": Listings.objects.order_by("-time").filter(status=True), #get only active listings by sorting according to creted date where status is equal to True
+            "title": "Active Listings",
             "number" : watch.watch.count()
         })
     else:
         return render(request, "auctions/index.html", {
             "Listing": Listings.objects.order_by("-time").filter(status=True), #get only active listings by sorting according to creted date where status is equal to True
+            "title": "Active Listings"
         })
 
 
@@ -91,9 +93,10 @@ def categories(request):
 # watchlist page view function
 def watchlist(request):
     user = User.objects.get(id=request.user.id)
-    return render(request, "auctions/watchlist.html", {
+    return render(request, "auctions/index.html", {
         "Listing": Listings.objects.order_by("-time").filter(watchlist=user, status=True),
-        "number" : user.watch.count()
+        "title": "Watchlist",
+        "number" : user.watch.count(),
     })
 
 #create listings
