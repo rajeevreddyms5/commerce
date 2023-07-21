@@ -18,7 +18,8 @@
     <div style="padding-left:5px;" >
         <p> {{ description }} </p>
         <p> Price: ${{ price }} </p>
-        <small class="text-muted">2 bid(s) so far your bid is the current bid.</small>
+        <p> Leading Bid Price: ${{ leadingbid }} </p>
+        <small class="text-muted">{{ bidcount }} bid(s) so far. Your bid is the current bid{{ leadbidder }}.</small>
     </div>
     <form action="{% url 'bid' %}" method="post">
         {% csrf_token %}

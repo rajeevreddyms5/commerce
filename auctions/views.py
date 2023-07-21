@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.template import loader
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 from .models import User, Listings, Bids, Comments
 
 
@@ -128,6 +129,10 @@ def create(request):
 def listing_page(request, id):
     page = Listings.objects.get(id=id)
     watch = User.objects.get(id=request.user.id)
+    #bid = Bids.objects.get(bidlisting=id)
+    leadingbid = Bids.objects.filter(bidlisting=id).aggregate(Max('bidplaced')).get('bidplaced__max')
+    #leadbidder = watch.bid_by.get(bidplaced=leadingbid)
+    #print(leadbidder.bidby)
     return render(request, "auctions/listings.html", {
         "name": page.title,
         "url": page.link,
@@ -137,7 +142,10 @@ def listing_page(request, id):
         "category": page.category.title,
         "watchlist": page.watchlist.filter(id=request.user.id).exists(),
         "number": watch.watch.count(),
-        "id": page.id
+        "id": page.id,
+        "bidcount": page.bidslist.count(),
+        "leadingbid": leadingbid,
+        #"leadbidder": leadbidder
     })
 
 # adds listing to users watchlist
@@ -159,12 +167,13 @@ def bid(request):
     bid = request.POST['bidprice']
     id = request.POST['ID']
     list = Listings.objects.get(id=id)
-    user = [User.objects.get(id=request.user.id)]
+    user = User.objects.get(id=request.user.id)
+    bids = Bids()
     if float(bid) > float(list.startingprice):
-        Bids.bidby = user
-        Bids.bidlisting = list
-        Bids.bidplace = float(bid)
-        Bids.save(self)
+        bids.bidby = user
+        bids.bidlisting = list
+        bids.bidplaced = float(bid)
+        bids.save()
         return listing_page(request, id)
     else:
         print("Your bid must be higher than current price")
