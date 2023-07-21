@@ -11,9 +11,17 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Listings, Bids, Comments
 
 def index(request):
-    return render(request, "auctions/index.html", {
-        "Listing": Listings.objects.order_by("-time").filter(status=True) #get only active listings by sorting according to creted date where status is equal to True
-    })
+    if request.user.id is not None:
+        watch = User.objects.get(id=request.user.id)
+        return render(request, "auctions/index.html", {
+            "Listing": Listings.objects.order_by("-time").filter(status=True), #get only active listings by sorting according to creted date where status is equal to True
+            "number" : watch.watch.count()
+        })
+    else:
+        return render(request, "auctions/index.html", {
+            "Listing": Listings.objects.order_by("-time").filter(status=True), #get only active listings by sorting according to creted date where status is equal to True
+        })
+
 
 
 def login_view(request):
@@ -86,21 +94,30 @@ def create(request):
         user = User.objects.get(id=request.user.id)
         if title == "" or description == "" or bidprice == "":  #if manadatory fields not entered then return message
             return render(request, "auctions/create.html", {
-                "message": "Enter Mandatory fields"
+                "message": "Enter Mandatory fields",
+                "number": user.watch.count()
             })
         else:   #if manadatory fields entered then save
             listing = Listings.objects.create(title=title, description=description, bidprice=bidprice, link=link, category=category, listedby=user)
             listing.save()  
             return index(request)
     else:
-        return render(request, "auctions/create.html")
+        user = User.objects.get(id=request.user.id)
+        return render(request, "auctions/create.html", {
+            "number": user.watch.count()
+        })
 
-
+@login_required(login_url='login')
 def listing_page(request, id):
     page = Listings.objects.get(id=id)
+    watch = User.objects.get(id=request.user.id)
     return render(request, "auctions/listings.html", {
         "name": page.title,
         "url": page.link,
         "description": page.description,
         "price": page.bidprice,
+        "created": page.listedby,
+        "category": page.category.title,
+        "watchlist": page.watchlist.filter(id=request.user.id).exists(),
+        "number": watch.watch.count()
     })

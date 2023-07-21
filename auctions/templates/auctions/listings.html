@@ -1,10 +1,11 @@
 {% extends "auctions/layout.html" %}
-{% load static %}
-
 
 {% block body %}
     <h2>Listing: {{ name }}</h2>
-
+    {% if watchlist %}
+        <span class="badge text-badge-danger" style="background-color: grey; color: white;" > Watchlist </span>
+    {% endif %}
+    
     <div>
         {% if url %}
         <img style="height:400px;" src={{ url }} alt={{ name }} >
@@ -28,8 +29,12 @@
     <div>
         <h3>Details</h3>
         <ul>
-            <li> Listed by: </li>
-            <li> Category: </li>
+            <li> Listed by : {{ created }}</li>
+            {% if category %}
+                <li> Category : {{ category }} </li>
+            {% else %}
+                <li> Category : None </li>
+            {% endif %}
         </ul>
     </div>
 
