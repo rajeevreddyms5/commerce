@@ -10,6 +10,8 @@ from django.template import loader
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from .models import User, Listings, Bids, Comments
+from .utils import max_price
+from decimal import Decimal
 
 
 
@@ -126,27 +128,58 @@ def create(request):
 
 # listing details page view function
 @login_required(login_url='login')
-def listing_page(request, id):
+def listing_page(request, id, alert=None):
     page = Listings.objects.get(id=id)
     watch = User.objects.get(id=request.user.id)
-    #bid = Bids.objects.get(bidlisting=id)
-    leadingbid = Bids.objects.filter(bidlisting=id).aggregate(Max('bidplaced')).get('bidplaced__max')
-    #leadbidder = watch.bid_by.get(bidplaced=leadingbid)
-    #print(leadbidder.bidby)
-    return render(request, "auctions/listings.html", {
-        "name": page.title,
-        "url": page.link,
-        "description": page.description,
-        "price": page.startingprice,
-        "created": page.listedby,
-        "category": page.category.title,
-        "watchlist": page.watchlist.filter(id=request.user.id).exists(),
-        "number": watch.watch.count(),
-        "id": page.id,
-        "bidcount": page.bidslist.count(),
-        "leadingbid": leadingbid,
-        #"leadbidder": leadbidder
-    })
+    leadingbid = max_price(id)
+    bid = Bids.objects.filter(bidplaced=leadingbid).first()
+    if leadingbid == None:
+        leadbidder = ""
+    else:
+        leadbidderid = bid.bidby
+        if leadbidderid == watch:
+            leadbidder = "Your bid is the leading bid "
+        else:
+            leadbidder = f"{bid.bidby} bid is the leading bid "
+    if leadingbid == None:
+        leadingbid = None
+    else:
+        leadingbid = f'{leadingbid:.2f}'
+    if alert == None:
+        context = {
+            "name": page.title,
+            "url": page.link,
+            "description": page.description,
+            "price": page.startingprice,
+            "created": page.listedby,
+            "category": page.category.title,
+            "watchlist": page.watchlist.filter(id=request.user.id).exists(),
+            "number": watch.watch.count(),
+            "id": page.id,
+            "bidcount": page.bidslist.count(),
+            "leadingbid": leadingbid,
+            "leadbidder": leadbidder,
+            "alerts": None,
+            "owner": "owner"
+        }
+    else:
+        context = {
+            "name": page.title,
+            "url": page.link,
+            "description": page.description,
+            "price": page.startingprice,
+            "created": page.listedby,
+            "category": page.category.title,
+            "watchlist": page.watchlist.filter(id=request.user.id).exists(),
+            "number": watch.watch.count(),
+            "id": page.id,
+            "bidcount": page.bidslist.count(),
+            "leadingbid": leadingbid,
+            "leadbidder": leadbidder,
+            "alerts": alert,
+            "owner": "owner"
+        }
+    return render(request, "auctions/listings.html", context)
 
 # adds listing to users watchlist
 def add_watch(request, id):
@@ -164,16 +197,28 @@ def remove_watch(request, id):
 
 # placing bid
 def bid(request):
-    bid = request.POST['bidprice']
+    bid = float(request.POST['bidprice'])
     id = request.POST['ID']
     list = Listings.objects.get(id=id)
     user = User.objects.get(id=request.user.id)
     bids = Bids()
-    if float(bid) > float(list.startingprice):
-        bids.bidby = user
-        bids.bidlisting = list
-        bids.bidplaced = float(bid)
-        bids.save()
-        return listing_page(request, id)
+    leadingbid = max_price(id)
+    if leadingbid == None:
+        if bid > list.startingprice:
+            bids.bidby = user
+            bids.bidlisting = list
+            bids.bidplaced = bid
+            bids.save()
+            return listing_page(request, id)
+        else:
+            return listing_page(request, id, "Your Bid should be greater than the Starting Price")
     else:
-        print("Your bid must be higher than current price")
+        if bid > leadingbid:
+            bids.bidby = user
+            bids.bidlisting = list
+            bids.bidplaced = bid
+            bids.save()
+            return listing_page(request, id)
+        else:
+            return listing_page(request, id, "Your Bid should be greater than the Leading Bid Price")
+            

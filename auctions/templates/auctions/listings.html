@@ -18,13 +18,20 @@
     <div style="padding-left:5px;" >
         <p> {{ description }} </p>
         <p> Price: ${{ price }} </p>
-        <p> Leading Bid Price: ${{ leadingbid }} </p>
-        <small class="text-muted">{{ bidcount }} bid(s) so far. Your bid is the current bid{{ leadbidder }}.</small>
+        {% if leadingbid %}
+            <p> Leading Bid Price: ${{ leadingbid }} </p>
+        {% endif %}
+        <small class="text-muted">{{ bidcount }} bid(s) so far. {{ leadbidder }}</small>
+        {% if alerts is not None %}
+            <div class="alert alert-danger" role="alert">
+                {{ alerts }}
+            </div>
+        {% endif %}
     </div>
     <form action="{% url 'bid' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <input class="form-control" autofocus type="text" name="bidprice" placeholder="Bid">
+            <input class="form-control" autofocus type="number" step=".01" name="bidprice" placeholder="Bid">
             <input type="hidden" name="ID" value={{ id }} />
         </div>
         <input class="btn btn-primary" type="submit" value="Place Bid">
