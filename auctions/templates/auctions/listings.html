@@ -1,6 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+
     <h2>Listing: {{ name }}</h2>
     {% if watchlist %}
         <a href="{% url 'remove_watch' id %}" class="btn btn-secondary btn-sm">Remove from Watchlist</a>
@@ -21,21 +22,43 @@
         {% if leadingbid %}
             <p> Leading Bid Price: ${{ leadingbid }} </p>
         {% endif %}
-        <small class="text-muted">{{ bidcount }} bid(s) so far. {{ leadbidder }}</small>
+        {% if status %}
+            <small class="text-muted">{{ bidcount }} bid(s) so far. {{ leadbidder }}</small>
+        {% else %}
+            {% if win_view %}
+                <div class="alert alert-danger" role="alert">Congratulations You WON</div>
+            {% else %}
+                <p> Winner: {{ winner }} </p>
+            {% endif %}
+        {% endif %}
         {% if alerts is not None %}
             <div class="alert alert-danger" role="alert">
                 {{ alerts }}
             </div>
         {% endif %}
     </div>
-    <form action="{% url 'bid' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input class="form-control" autofocus type="number" step=".01" name="bidprice" placeholder="Bid">
-            <input type="hidden" name="ID" value={{ id }} />
-        </div>
-        <input class="btn btn-primary" type="submit" value="Place Bid">
-    </form>
+    <div>
+        {% if owner %}
+            {% if status %}
+                <a href="{% url 'close' id %}" class="btn btn-secondary btn-sm">Close Bidding</a>
+            {% else %}
+                <div class="alert alert-danger" role="alert">Bid closed</div>
+            {% endif %}
+        {% else %}
+            {% if status %}
+                <form action="{% url 'bid' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input class="form-control" autofocus type="number" step=".01" name="bidprice" placeholder="Bid">
+                        <input type="hidden" name="ID" value={{ id }} />
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Place Bid">
+                </form>
+            {% else %}
+                <div class="alert alert-danger" role="alert">Bid closed</div>
+            {% endif %}
+        {% endif %}
+    </div>
     <br>
     <div>
         <h3>Details</h3>

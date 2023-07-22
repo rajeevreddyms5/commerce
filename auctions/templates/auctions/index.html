@@ -3,6 +3,15 @@
 
 
 {% block body %}
+
+    {% if status %}
+        <h2>
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <a href="{% url 'closed' %}" class="btn btn-primary">view closed listings</a>
+            </div>
+        </h2>
+    {% endif %}
+    
     <h2>{{ title }}</h2>
 
     <style>
