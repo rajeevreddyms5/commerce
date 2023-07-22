@@ -281,7 +281,7 @@ def close(request, id):
     else:
         return listing_page(request, id, "Bid already closed")
 
-
+# view closed biddings
 def closed(request):
     if request.user.id is not None:
         watch = User.objects.get(id=request.user.id)
@@ -295,3 +295,41 @@ def closed(request):
             "Listing": Listings.objects.order_by("-time").filter(status=False), #get only active listings by sorting according to creted date where status is equal to True
             "title": "Active Listings"
         })
+
+
+# comments function
+def comments(request):
+    # get comments
+    query_data = request.POST.get("comments", None)
+    if "comments" in request.POST:
+        comments = request.POST["comments"]
+    else:
+        comments = None
+    
+    # get listing id
+    query_data = request.POST.get("ID", None)
+    if "ID" in request.POST:
+        id = request.POST["ID"]
+    else:
+        id = None
+    
+    # if blank return alert
+    if comments:
+        
+        return listing_page(request, id)
+    else:
+        return listing_page(request, id, "Comments text should not be blank")
+    
+    
+    """
+
+    if request.POST['comments'] != '':
+        bid = float(request.POST['comments'])
+        id = request.POST['ID']
+        print(bid)
+        print(id)
+        return listing_page(request, id)
+    else:
+        return listing_page(request, id)
+    """
+    
