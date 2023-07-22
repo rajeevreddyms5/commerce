@@ -28,5 +28,7 @@ class Bids(models.Model):
 
 
 class Comments(models.Model):
-    commentsby = models.ManyToManyField(User)
     comments = models.TextField(null=True, blank=False)
+    commentsby = models.ManyToManyField(User, related_name="commented_by")
+    commentlist = models.ManyToManyField(Listings, related_name="commented_on")
+    
