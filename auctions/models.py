@@ -31,4 +31,5 @@ class Comments(models.Model):
     comments = models.TextField(null=True, blank=False)
     commentsby = models.ManyToManyField(User, related_name="commented_by")
     commentlist = models.ManyToManyField(Listings, related_name="commented_on")
+    commenttime = models.DateTimeField(null=True, auto_now_add=True)
     
