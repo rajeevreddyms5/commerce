@@ -72,7 +72,19 @@
         </ul>
     </div>
 
-    <div>
+    <div>  
+        {% if status %}
+            <h4>Add Comments:</h4>    
+                <form action="{% url 'comments' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="comments" placeholder="comments">
+                        <input type="hidden" name="ID" value={{ id }} />
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Submit Comments">
+                </form>
+        {% endif %}
+
         <h3>Comments:</h3>
         <style>
             .card-horizontal {
@@ -98,21 +110,10 @@
                     </blockquote>
                     </div>
                 </div>
+                <br>
         
             {% endfor %}
         
-        {% endif %}
-    
-        {% if status %}
-            <h4>Add Comments:</h4>    
-                <form action="{% url 'comments' %}" method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <input class="form-control" type="text" name="comments" placeholder="comments">
-                        <input type="hidden" name="ID" value={{ id }} />
-                    </div>
-                    <input class="btn btn-primary" type="submit" value="Submit Comments">
-                </form>
         {% endif %}
     </div>
 

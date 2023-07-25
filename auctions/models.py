@@ -29,7 +29,7 @@ class Bids(models.Model):
 
 class Comments(models.Model):
     comments = models.TextField(null=True, blank=False)
-    commentsby = models.ManyToManyField(User, related_name="commented_by")
+    commentsby = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name="commented_by")
     commentlist = models.ManyToManyField(Listings, related_name="commented_on")
     commenttime = models.DateTimeField(null=True, auto_now_add=True)
     

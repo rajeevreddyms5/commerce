@@ -94,13 +94,15 @@ def register(request):
 
 def categories(request):
     user = User.objects.get(id=request.user.id)
-    return render(request, "auctions/category.html")
+    list = Listings.objects.get(pk=pk)
+    return render(request, "auctions/category.html", {
+        "categories": list.category
+    })
 
 # watchlist page view function
 def watchlist(request):
     user = User.objects.get(id=request.user.id)
     return render(request, "auctions/index.html", {
-        #"Listing": Listings.objects.order_by("-time").filter(watchlist=user, status=True),
         "Listing": Listings.objects.order_by("-time").filter(watchlist=user),
         "title": "Watchlist",
         "number" : user.watch.count(),
@@ -176,15 +178,9 @@ def listing_page(request, id, alert=None):
 
     # view comments
     if len(Comments.objects.filter(commentlist=page)) != 0:
-        comment = Comments.objects.filter(commentlist=page)
+        comment = Comments.objects.order_by("-commenttime").filter(commentlist=page)
     else:
         comment = None
-    
-    # test
-    for c in comment:
-        print(c.commentsby.all())
-        print(c.pk)
-
 
     #context based on alerts
     if alert == None:
@@ -336,7 +332,7 @@ def comments(request):
         comment = Comments()
         comment.comments = comments
         comment.save()
-        comment.commentsby.set([request.user.id])
+        comment.commentsby = user
         comment.commentlist.set([list])
         comment.save()
         return listing_page(request, id)
