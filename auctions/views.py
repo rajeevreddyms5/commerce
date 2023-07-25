@@ -175,10 +175,14 @@ def listing_page(request, id, alert=None):
         win_view = False
 
     # view comments
-    comment = Comments.get(commentlist=id)
-    comment1 = Comments.get(commentlist=page)
-    print(comment, comment1)
-    #print(comment.comments, comment.commenttime, comment.commentsby)
+    if len(Comments.objects.filter(commentlist=page)) != 0:
+        comment = Comments.objects.filter(commentlist=page)
+    else:
+        comment = None
+    
+    # test
+    for c in comment:
+        print(c.commentsby)
 
     #context based on alerts
     if alert == None:
@@ -199,7 +203,8 @@ def listing_page(request, id, alert=None):
             "owner": owner,
             "winner": winner,
             "status": page.status,
-            "win_view": win_view
+            "win_view": win_view,
+            "comments": comment
         }
     else:
         context = {
@@ -219,7 +224,8 @@ def listing_page(request, id, alert=None):
             "owner": owner,
             "winner": winner,
             "status": page.status,
-            "win_view": win_view
+            "win_view": win_view,
+            "comments": comment
         }
     return render(request, "auctions/listings.html", context)
 
@@ -322,11 +328,13 @@ def comments(request):
     # if blank return alert
     if comments:
         user = User.objects.get(id=request.user.id)
+        print(user)
+        print(request.user.id)
         list = Listings.objects.get(id=id)
         comment = Comments()
         comment.comments = comments
         comment.save()
-        comment.commentsby.set([user])
+        comment.commentsby.set([request.user.id])
         comment.commentlist.set([list])
         comment.save()
         return listing_page(request, id)
