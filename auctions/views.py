@@ -182,7 +182,9 @@ def listing_page(request, id, alert=None):
     
     # test
     for c in comment:
-        print(c.commentsby)
+        print(c.commentsby.all())
+        print(c.pk)
+
 
     #context based on alerts
     if alert == None:
