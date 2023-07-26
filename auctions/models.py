@@ -25,6 +25,9 @@ class Bids(models.Model):
     bidlisting = models.ForeignKey(Listings, null=True, on_delete=models.CASCADE, related_name="bidslist")
     bidplaced = models.DecimalField(null=True, blank=True, decimal_places=2, max_digits=10)
     
+    def __str__(self):
+        return 'Bids: {} by {} on {}'.format(self.bidplaced, self.bidby, self.bidlisting)
+    
 
 
 class Comments(models.Model):
@@ -32,4 +35,7 @@ class Comments(models.Model):
     commentsby = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name="commented_by")
     commentlist = models.ManyToManyField(Listings, related_name="commented_on")
     commenttime = models.DateTimeField(null=True, auto_now_add=True)
+    
+    def __str__(self):
+        return 'Comments: {}'.format(self.comments)
     

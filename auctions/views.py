@@ -8,27 +8,40 @@ from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.template import loader
 from django.contrib.auth.decorators import login_required
-from django.db.models import Max
+from django.db.models import Max, Count
 from .models import User, Listings, Bids, Comments
 from .utils import max_price
 from decimal import Decimal
 
 
 
-def index(request):
+def index(request, category=None):
     if request.user.id is not None:
-        watch = User.objects.get(id=request.user.id)
-        return render(request, "auctions/index.html", {
-            "Listing": Listings.objects.order_by("-time").filter(status=True), #get only active listings by sorting according to creted date where status is equal to True
-            "title": "Active Listings",
-            "number" : watch.watch.count(),
-            "status": True
-        })
+        if category is not None:
+            watch = User.objects.get(id=request.user.id)
+            return render(request, "auctions/index.html", {
+                "Listing": Listings.objects.order_by("-time").filter(status=True, category=category), #get only active listings by sorting according to creted date where status is equal to True
+                "title": "Active Listings",
+                "number" : watch.watch.count(),
+                "status": True,
+                "status1": False
+            })
+        else:
+            watch = User.objects.get(id=request.user.id)
+            return render(request, "auctions/index.html", {
+                "Listing": Listings.objects.order_by("-time").filter(status=True), #get only active listings by sorting according to creted date where status is equal to True
+                "title": "Active Listings",
+                "number" : watch.watch.count(),
+                "status": True,
+                "status1": True
+            })
+            
     else:
         return render(request, "auctions/index.html", {
             "Listing": Listings.objects.order_by("-time").filter(status=True), #get only active listings by sorting according to creted date where status is equal to True
             "title": "Active Listings",
-            "status": True
+            "status": True,
+            "status1": True
         })
 
 
@@ -94,9 +107,10 @@ def register(request):
 
 def categories(request):
     user = User.objects.get(id=request.user.id)
-    list = Listings.objects.get(pk=pk)
+    object_list = Listings.objects.filter(status=True).values('category').annotate(category_count=Count('category')).order_by()
     return render(request, "auctions/category.html", {
-        "categories": list.category
+        "categories": object_list,
+        "number": user.watch.count(),
     })
 
 # watchlist page view function
@@ -298,7 +312,8 @@ def closed(request):
         return render(request, "auctions/index.html", {
             "Listing": Listings.objects.order_by("-time").filter(status=False), #get only active listings by sorting according to creted date where status is equal to True
             "title": "Active Listings",
-            "number" : watch.watch.count()
+            "number" : watch.watch.count(),
+            "status": False
         })
     else:
         return render(request, "auctions/index.html", {

@@ -6,7 +6,11 @@
     
     <div>
         {% for category in categories %}
-            <p4>{{ category }} </p4>
+            {% if category.category %}
+                <ul>
+                    <li> <a href="{% url 'index' category=category.category %}" >{{ category.category }}({{ category.category_count }})</a></li>
+                </ul>
+            {% endif %}
         {% endfor %}
     </div>
 

@@ -5,50 +5,108 @@
 {% block body %}
 
     {% if status %}
-        <h2>
-            <div class="d-grid gap-2 col-6 mx-auto">
-                <a href="{% url 'closed' %}" class="btn btn-primary">view closed listings</a>
-            </div>
-        </h2>
-    {% endif %}
+        {% if status1 %}
+            <h2>
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <a href="{% url 'closed' %}" class="btn btn-primary">view closed listings</a>
+                </div>
+            </h2>
+        {% endif %}
     
-    <h2>{{ title }}</h2>
+    
+        {% if Listing %}   
 
-    <style>
-        .card-horizontal {
-            display: flex;
-            flex: 1 1 auto;
-        }
-    </style>
+            <h2>{{ title }}</h2>
 
-    {% for list in Listing %}
+            <style>
+                .card-horizontal {
+                    display: flex;
+                    flex: 1 1 auto;
+                }
+            </style>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 mt-3">
-                    <div class="card">
-                        <div class="card-horizontal">
-                            <div class="img-square-wrapper">
-                                {% if list.link %}
-                                    <img class="" src={{ list.link }} alt={{ list.title }} width="150px">
-                                {% else %}
-                                    <p> no image </p>
-                                {% endif %}
-                            </div>
-                            <div class="card-body">
-                                <h4 class="card-title"> <a href="{% url 'listing_page' list.id %}" class="stretched-link">{{ list.title }}</a> </h4>
-                                <p class="card-text">Price: ${{ list.startingprice }}</p>
-                                <p class="card-text">Description: {{ list.description }}</p>
+            {% for list in Listing %}
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12 mt-3">
+                                <div class="card">
+                                    <div class="card-horizontal">
+                                        <div class="img-square-wrapper">
+                                            {% if list.link %}
+                                                <img class="" src={{ list.link }} alt={{ list.title }} width="150px">
+                                            {% else %}
+                                                <p> no image </p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-body">
+                                            <h4 class="card-title"> <a href="{% url 'listing_page' list.id %}" class="stretched-link">{{ list.title }}</a> </h4>
+                                            <p class="card-text">Price: ${{ list.startingprice }}</p>
+                                            <p class="card-text">Description: {{ list.description }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <small class="text-muted">created {{ list.time }}</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <small class="text-muted">created {{ list.time }}</small>
+                    </div>
+
+            {% endfor %}
+        {% else %}
+            <h2>No Active Listings</h2>
+        {% endif %}
+
+    {% else %}
+        {% if Listing %}   
+
+        <h2>Closed Listings</h2>
+
+        <style>
+            .card-horizontal {
+                display: flex;
+                flex: 1 1 auto;
+            }
+
+            .container-fluid {
+                background-color: rgba(245, 245, 245, 1);
+                opacity: .7;
+            }
+        </style>
+
+        {% for list in Listing %}
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 mt-3">
+                            <div class="card">
+                                <div class="card-horizontal">
+                                    <div class="img-square-wrapper">
+                                        {% if list.link %}
+                                            <img class="" src={{ list.link }} alt={{ list.title }} width="150px">
+                                        {% else %}
+                                            <p> no image </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="card-title"> <a href="{% url 'listing_page' list.id %}" class="stretched-link">{{ list.title }}</a> </h4>
+                                        <p class="card-text">Price: ${{ list.startingprice }}</p>
+                                        <p class="card-text">Description: {{ list.description }}</p>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">created {{ list.time }}</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-    {% endfor %}
+        {% endfor %}
+        {% else %}
+            <h2>No Closed Listings</h2>
+        {% endif %}
+    {% endif %}
 
 {% endblock %}
