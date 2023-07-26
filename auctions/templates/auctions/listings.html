@@ -1,0 +1,120 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>Listing: {{ name }}</h2>
+    {% if watchlist %}
+        <a href="{% url 'remove_watch' id %}" class="btn btn-secondary btn-sm">Remove from Watchlist</a>
+    {% else %}
+        <a href="{% url 'add_watch' id %}" class="btn btn-secondary btn-sm">Add to Watchlist</a>
+    {% endif %}
+    
+    <div>
+        {% if url %}
+        <img style="height:400px;" src={{ url }} alt={{ name }} >
+        {% else %}
+            <p> no image </p>
+        {% endif %}
+    </div>
+    <div style="padding-left:5px;" >
+        <p> {{ description }} </p>
+        <p> Price: ${{ price }} </p>
+        {% if leadingbid %}
+            <p> Leading Bid Price: ${{ leadingbid }} </p>
+        {% endif %}
+        {% if status %}
+            <small class="text-muted">{{ bidcount }} bid(s) so far. {{ leadbidder }}</small>
+        {% else %}
+            {% if win_view %}
+                <div class="alert alert-danger" role="alert">Congratulations You WON</div>
+            {% else %}
+                <p> Winner: {{ winner }} </p>
+            {% endif %}
+        {% endif %}
+        {% if alerts is not None %}
+            <div class="alert alert-danger" role="alert">
+                {{ alerts }}
+            </div>
+        {% endif %}
+    </div>
+    <div>
+        {% if owner %}
+            {% if status %}
+                <a href="{% url 'close' id %}" class="btn btn-secondary btn-sm">Close Bidding</a>
+            {% else %}
+                <div class="alert alert-danger" role="alert">Bid closed</div>
+            {% endif %}
+        {% else %}
+            {% if status %}
+                <form action="{% url 'bid' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input class="form-control" autofocus type="number" step=".01" name="bidprice" placeholder="Bid">
+                        <input type="hidden" name="ID" value={{ id }} />
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Place Bid">
+                </form>
+            {% else %}
+                <div class="alert alert-danger" role="alert">Bid closed</div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <br>
+    <div>
+        <h3>Details</h3>
+        <ul>
+            <li> Listed by : {{ created }}</li>
+            {% if category %}
+                <li> Category : {{ category }} </li>
+            {% else %}
+                <li> Category : None </li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div>  
+        {% if status %}
+            <h4>Add Comments:</h4>    
+                <form action="{% url 'comments' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="comments" placeholder="comments">
+                        <input type="hidden" name="ID" value={{ id }} />
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Submit Comments">
+                </form>
+        {% endif %}
+
+        <h3>Comments:</h3>
+        <style>
+            .card-horizontal {
+                display: flex;
+                flex: 1 1 auto;
+            }
+        </style>
+        {% if comments is None %}
+            <p>No Comments</p>
+        
+        {% else %}
+        
+            {% for comment in comments %}
+
+                <div class="card">
+                    <div class="card-header">
+                    {{ comment.commentsby }}
+                    </div>
+                    <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p>{{ comment.comments }}</p>
+                        <footer class="blockquote-footer">Date: <cite title="Source Title">{{ comment.commenttime }}</cite></footer>
+                    </blockquote>
+                    </div>
+                </div>
+                <br>
+        
+            {% endfor %}
+        
+        {% endif %}
+    </div>
+
+{% endblock %}
