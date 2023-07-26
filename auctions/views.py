@@ -120,7 +120,7 @@ def watchlist(request):
         "Listing": Listings.objects.order_by("-time").filter(watchlist=user),
         "title": "Watchlist",
         "number" : user.watch.count(),
-        "status": False
+        "status": True
     })
 
 #create listings
